@@ -29,9 +29,9 @@ class EvaluateExpressionTool(Tool):
                 result = float(result)
             else:
                 result = str(result)
-                return result
+            return {"content": str(result)}
         except SympifyError as e:
-            return str(e)
+            return {"content": str(e)}
 
 
 class CalculatePolynomialRootsTool(Tool):
@@ -55,9 +55,9 @@ class CalculatePolynomialRootsTool(Tool):
         try:
             roots = solve(sympify(equation), dict=True)
             roots_list = [str(root) for root in roots]
-            return roots_list
+            return {"content": str(roots_list)}
         except SympifyError as e:
-            return str(e)
+            return {"content": str(e)}
 
 
 class SolveAlgebraicEquationTool(Tool):
@@ -89,4 +89,4 @@ class SolveAlgebraicEquationTool(Tool):
         eq = Eq(parse_expr(left_part), parse_expr(right_part))
         # Solve the equation for the variable
         solution = solve(eq, symbol)
-        return solution
+        return {"content": str(solution)}
