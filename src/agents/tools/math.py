@@ -25,7 +25,7 @@ class EvaluateExpressionTool(Tool):
     def func(self, expression):
         try:
             result = sympify(expression)
-            if result.is_number:
+            if result.is_number and result.is_real:
                 result = float(result)
             else:
                 result = str(result)
@@ -82,11 +82,14 @@ class SolveAlgebraicEquationTool(Tool):
         super().__init__(description, name, parameters)
 
     def func(self, equation, variable):
-        # Create a symbolic variable
-        symbol = symbols(variable)
-        # Parse the equation string into a sympy expression
-        left_part, right_part = equation.split("=")
-        eq = Eq(parse_expr(left_part), parse_expr(right_part))
-        # Solve the equation for the variable
-        solution = solve(eq, symbol)
-        return {"content": str(solution)}
+        try:
+            # Create a symbolic variable
+            symbol = symbols(variable)
+            # Parse the equation string into a sympy expression
+            left_part, right_part = equation.split("=")
+            eq = Eq(parse_expr(left_part), parse_expr(right_part))
+            # Solve the equation for the variable
+            solution = solve(eq, symbol)
+            return {"content": str(solution)}
+        except Exception as e:
+            return {"content": str(e)}
