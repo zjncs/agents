@@ -294,7 +294,14 @@ class NodeOptimizer(Optimizer):
                         raise ValueError("The node should have at least one role.")
                     # begin role may need to be updated
                     if node.begin_role == role_name:
-                        node.begin_role = next(iter(node.node_prompt_paddings))
+                        # prefer a role that is actually assigned in node_roles so
+                        # SOP routing can resolve it via name_role_hash
+                        assigned = [r for r in node.node_roles if r in node.node_prompt_paddings]
+                        node.begin_role = assigned[0] if assigned else next(iter(node.node_prompt_paddings))
+                    # order routing calls node_roles.index(current_role) and would
+                    # raise if current_role still points at the deleted role
+                    if node.current_role == role_name:
+                        node.current_role = node.begin_role
 
                 elif action == "update_role_description":
                     role_name = rule["role_name"]
